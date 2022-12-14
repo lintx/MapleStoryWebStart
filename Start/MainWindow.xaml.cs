@@ -475,13 +475,18 @@ namespace Start
         }
         private void SelectGamePathTextBox_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            Setting.GamePath = string.Empty;
             var openFileDialog = new Microsoft.Win32.OpenFileDialog()
             {
                 Filter = $"新枫之谷游戏文件 ({gameExe})|{gameExe}",
                 Title = "选择新枫之谷游戏目录",
                 //FileName = Setting.GamePath,
-                InitialDirectory = Path.GetDirectoryName(Setting.GamePath),
+                //InitialDirectory = Path.GetDirectoryName(Setting.GamePath),
             };
+            if (!string.IsNullOrEmpty(Setting.GamePath))
+            {
+                openFileDialog.InitialDirectory = Path.GetDirectoryName(Setting.GamePath);
+            }
             var result = openFileDialog.ShowDialog();
             if (result == true)
             {
