@@ -60,7 +60,7 @@ namespace Start
 
         #region 游戏启动相关
         [DllImport("LRInject.dll", EntryPoint = "LRInject", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        public static extern uint LRInject(string application, string workpath, string commandline, string dllpath);
+        public static extern uint LRInject(string application, string workpath, string commandline, string dllpath, uint CodePage, bool HookIME);
         private class BeanfunArgs
         {
             public string SN = string.Empty;
@@ -288,7 +288,8 @@ namespace Start
                 string path = Setting.GamePath;
                 string commandLine = Setting.AutoLogin ? $"{gameExe} tw.login.maplestory.beanfun.com 8484 BeanFun {IdPass.Id} {IdPass.Pass}" : gameExe;
                 string dllPath = $"{Environment.CurrentDirectory}\\LRHookx64.dll";
-                uint pid = LRInject(path, Path.GetDirectoryName(path), commandLine, dllPath);
+                //MessageBox.Show(path + "," + commandLine + "," + dllPath);
+                uint pid = LRInject(path, Path.GetDirectoryName(path), commandLine, dllPath, (uint)System.Globalization.CultureInfo.GetCultureInfo("zh-HK").TextInfo.ANSICodePage, Environment.OSVersion.Version >= new Version(6, 2));
                 Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() =>
                 {
                     //这里要放到主线程执行，否则会造成计时器退出

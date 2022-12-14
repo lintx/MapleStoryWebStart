@@ -17,24 +17,12 @@ int WrtieConfigFileMap(LRProfile* profile)
 	return 0;
 }
 
-bool isWin8OrHight()
-{
-	std::string vname;
-	//先判断是否为win8.1或win10
-	typedef void(__stdcall* NTPROC)(DWORD*, DWORD*, DWORD*);
-	HINSTANCE hinst = LoadLibrary(L"ntdll.dll");
-	DWORD dwMajor, dwMinor, dwBuildNumber;
-	NTPROC proc = (NTPROC)GetProcAddress(hinst, "RtlGetNtVersionNumbers");
-	proc(&dwMajor, &dwMinor, &dwBuildNumber);
-	return dwMajor > 6 || (dwMajor == 6 && dwMinor >= 2);
-}
-
 extern "C"
 {
-	_declspec(dllexport) DWORD __stdcall LRInject(char* application, char* workpath, char* commandline, char* dllpath) {
+	_declspec(dllexport) DWORD __stdcall LRInject(char* application, char* workpath, char* commandline, char* dllpath, UINT CodePage, bool HookIME) {
 		LRProfile beta;
-		beta.CodePage = 950;//台湾地区codepage
-		beta.HookIME = isWin8OrHight(); //win8或以上需要hook ime
+		beta.CodePage = CodePage;
+		beta.HookIME = HookIME; //win8或以上需要hook ime
 
 		WrtieConfigFileMap(&beta);
 
