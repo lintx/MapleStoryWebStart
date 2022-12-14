@@ -1,0 +1,36 @@
+﻿<Application x:Class="Start.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Start"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Blue.Primary.xaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                    <SolidColorBrush x:Key="PrimaryHueLightBrush" po:Freeze="True" Color="#98ffe1" />
+                    <SolidColorBrush x:Key="PrimaryHueLightForegroundBrush" po:Freeze="True" Color="#dd000000" />
+                    <SolidColorBrush x:Key="PrimaryHueMidBrush" po:Freeze="True" Color="#63dbaf" />
+                    <SolidColorBrush x:Key="PrimaryHueMidForegroundBrush" po:Freeze="True" Color="#dd000000" />
+                    <SolidColorBrush x:Key="PrimaryHueDarkBrush" po:Freeze="True" Color="#27a980" />
+                    <SolidColorBrush x:Key="PrimaryHueDarkForegroundBrush" po:Freeze="True" Color="#dd000000" />
+                </ResourceDictionary>
+                <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Lime.Accent.xaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                    <SolidColorBrush x:Key="SecondaryHueLightBrush" po:Freeze="True" Color="#8e8e8e" />
+                    <SolidColorBrush x:Key="SecondaryHueLightForegroundBrush" po:Freeze="True" Color="#dd000000" />
+                    <SolidColorBrush x:Key="SecondaryHueMidBrush" po:Freeze="True" Color="#616161" />
+                    <SolidColorBrush x:Key="SecondaryHueMidForegroundBrush" po:Freeze="True" Color="#ddffffff" />
+                    <SolidColorBrush x:Key="SecondaryHueDarkBrush" po:Freeze="True" Color="#373737" />
+                    <SolidColorBrush x:Key="SecondaryHueDarkForegroundBrush" po:Freeze="True" Color="#ddffffff" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

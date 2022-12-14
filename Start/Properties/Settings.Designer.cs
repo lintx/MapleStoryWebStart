@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Setting.Properties
+namespace Start.Properties
 {
 
 
