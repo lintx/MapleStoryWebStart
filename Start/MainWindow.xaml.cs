@@ -36,13 +36,15 @@ namespace Start
             LoadSetting();
             Loaded += (s, e) =>
             {
-                GamePathValid();
+                //GamePathValid();
                 //窗体布局属性等加载完毕，但是还没有呈现
             };
             ContentRendered += (s, e) =>
             {
                 //窗体内容已经呈现完毕
                 SetInstallButtonContent();
+                //Thread.Sleep(2000);
+                //IdPass.Id = "1111";
                 if (Setting.CheckInstalled && !Installed())
                 {
                     yesNoDialogYesBtnClick = (s1, p) => {
@@ -427,7 +429,11 @@ namespace Start
         private void LoadSetting()
         {
             FileInfo file = new FileInfo(settingFile);
-            if (!file.Exists) { return; }
+            if (!file.Exists)
+            {
+                settingDialog.DataContext = Setting;
+                return;
+            }
             var des = new DeserializerBuilder()
               .WithNamingConvention(UnderscoredNamingConvention.Instance)
               .IgnoreUnmatchedProperties()//忽略不存在的字段
@@ -552,7 +558,7 @@ namespace Start
                 if (commandKey == null) return false;
                 var val = commandKey.GetValue("").ToString();
                 var exePath = Process.GetCurrentProcess().MainModule.FileName;
-                Console.WriteLine("val:" + val + ",exe:" + exePath);
+                //Console.WriteLine("val:" + val + ",exe:" + exePath);
                 return val.StartsWith(exePath);
             }
             catch
