@@ -17,9 +17,9 @@ namespace Start
         private bool joinEd = false;
         private bool exitEd = false;
         private Process process;
-        private SettingModel setting;
+        private MainModel setting;
         private DispatcherTimer timer = new DispatcherTimer();
-        internal GameManager(SettingModel setting, uint pid)
+        internal GameManager(MainModel setting, uint pid)
         {
             this.setting = setting;
             this.pid = pid;
@@ -27,6 +27,13 @@ namespace Start
             timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Tick += timer_Tick;
             timer.Start();
+        }
+
+        internal void Dispose()
+        {
+            timer.Tick -= timer_Tick;
+            timer.Stop();
+            process = null;
         }
 
         private void timer_Tick(object sender, EventArgs e)

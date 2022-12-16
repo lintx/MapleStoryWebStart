@@ -13,54 +13,71 @@
         ResizeMode="CanMinimize"
         Title="MapleStoryStart" Height="340" Width="300">
     <materialDesign:DialogHost Identifier="RootDialog" DialogTheme="Inherit">
-        <Grid Margin="16">
-            <StackPanel x:Name="idPassPanel">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBox materialDesign:HintAssist.Hint="游戏帐号" Width="200" Text="{Binding DisplayId,Mode=OneWay}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
-                    <Button Click="CopyIdButton_Click" ToolTip="将游戏帐号复制到剪切板" Style="{StaticResource MaterialDesignToolButton}" Height="24" Width="24" Cursor="Hand" Content="{materialDesign:PackIcon Kind=ContentCopy}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
-                    <TextBox materialDesign:HintAssist.Hint="一次性游戏密码" Width="200" Text="{Binding DisplayPass,Mode=OneWay}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
-                    <Button Click="CopyPassButton_Click" ToolTip="将一次性游戏密码复制到剪切板" Style="{StaticResource MaterialDesignToolButton}" Height="24" Width="24" Cursor="Hand" Content="{materialDesign:PackIcon Kind=ContentCopy}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
-                    <Button Click="InputIdPassButton_Click" ToolTip="进入游戏输入帐号密码界面后，点击可直接将帐号密码输入并进入游戏" Content="一键输入帐号密码" Style="{StaticResource MaterialDesignFlatButton}"></Button>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
-                    <Button Click="RefreshPassButton_Click" ToolTip="更新一次性游戏密码" Content="更新密码" Style="{StaticResource MaterialDesignFlatButton}"></Button>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
-                    <Button Click="RunGameButton_Click" ToolTip="手动启动游戏" Content="启动游戏" Style="{StaticResource MaterialDesignFlatButton}"></Button>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
-                    <Button Click="SettingButton_Click" ToolTip="打开设置界面" Content="设置" Style="{StaticResource MaterialDesignFlatButton}" Cursor="Hand"></Button>
-                </StackPanel>
+        <Grid Margin="16" x:Name="idPassPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" IsEnabled="{Binding HasIdPass}" materialDesign:HintAssist.Hint="游戏帐号" Text="{Binding DisplayId,Mode=OneWay}" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
+                <Button Grid.Column="1" IsEnabled="{Binding HasIdPass}" Click="CopyIdButton_Click" ToolTip="将游戏帐号复制到剪切板" Style="{StaticResource MaterialDesignToolButton}" Height="24" Width="24" Cursor="Hand" Content="{materialDesign:PackIcon Kind=ContentCopy}" />
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" IsEnabled="{Binding HasIdPass}" materialDesign:HintAssist.Hint="一次性游戏密码" Text="{Binding DisplayPass,Mode=OneWay}" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
+                <Button Grid.Column="1" IsEnabled="{Binding HasIdPass}" Click="CopyPassButton_Click" ToolTip="将一次性游戏密码复制到剪切板" Style="{StaticResource MaterialDesignToolButton}" Height="24" Width="24" Cursor="Hand" Content="{materialDesign:PackIcon Kind=ContentCopy}" />
+            </Grid>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
+                <ToggleButton IsChecked="{Binding HideIdPass,Mode=TwoWay}" Width="32" Height="32" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否显示帐号密码&#x0a;开启后帐号密码以星号显示" Content="{materialDesign:PackIcon Kind=EyeOutline}" />
+                <ToggleButton IsChecked="{Binding AutoLogin,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="开启自动登录游戏：&#x0a;  不需要输入一次性密码直接进入选区界面&#x0a;  掉线后需要关闭游戏重新进入&#x0a;不自动登录游戏：&#x0a;  需要手动输入一次性密码或使用自动输入功能&#x0a;  掉线后不需要关闭游戏，可以重新输入密码进入游戏" Content="{materialDesign:PackIcon Kind=ArrowDecisionAuto}" />
+                <ToggleButton IsChecked="{Binding AutoRun,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="刷新密码后是否自动运行游戏" Content="{materialDesign:PackIcon Kind=CandyOutline}" />
+                <ToggleButton IsChecked="{Binding SkipPlayer,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否跳过Play窗口&#x0a;检测到Play窗口后自动将其关闭" Content="{materialDesign:PackIcon Kind=AirHumidifier}" />
+                <ToggleButton IsChecked="{Binding SkipNgs,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否自动结束右下角NGS画面&#x0a;有的人会卡NGS导致无法进入游戏&#x0a;可以手动结束相关进程进入游戏&#x0a;参考：https://forum.gamer.com.tw/C.php?bsn=7650&amp;snA=1018778" Content="{materialDesign:PackIcon Kind=DogSide}" />
+                <ToggleButton IsChecked="{Binding PreventAutoUpdate,Mode=TwoWay}" IsEnabled="False" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否阻止自动更新&#x0a;枫之谷自动更新可能会造成游戏损坏&#x0a;勾选后检测到游戏更新程序会自动终止" Content="{materialDesign:PackIcon Kind=UploadOutline}" />
             </StackPanel>
-            <materialDesign:DialogHost>
-                <materialDesign:DialogHost.DialogContent>
-                    <Grid x:Name="settingDialog">
-                        <materialDesign:DialogHost Identifier="settingDialogHost">
-                            <StackPanel Margin="16">
-                                <TextBox PreviewMouseLeftButtonUp="SelectGamePathTextBox_PreviewMouseLeftButtonUp" Text="{Binding GamePath,Mode=TwoWay}" materialDesign:HintAssist.Hint="游戏路径" Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
-                                <CheckBox IsChecked="{Binding HideIdPass,Mode=TwoWay}" Margin="0 8 0 0" Content="隐藏帐号密码" ToolTip="帐号密码以星号显示" />
-                                <CheckBox IsChecked="{Binding AutoRun,Mode=TwoWay}" Margin="0 8 0 0" Content="获取密码后自动启动游戏" ToolTip="获取密码成功后是否自动运行游戏" />
-                                <CheckBox IsChecked="{Binding AutoLogin,Mode=TwoWay}" Margin="0 8 0 0" Content="自动登录游戏" ToolTip="自动登录游戏：&#x0a;  不需要输入一次性密码直接进入选区界面&#x0a;  掉线后需要关闭游戏重新进入&#x0a;不自动登录游戏：&#x0a;  需要手动输入一次性密码或使用自动输入功能&#x0a;  掉线后不需要关闭游戏，可以重新输入密码进入游戏" />
-                                <CheckBox IsChecked="{Binding SkipPlayer,Mode=TwoWay}" Margin="0 8 0 0" Content="自动跳过Play窗口" ToolTip="检测到Play窗口后自动将其关闭" />
-                                <CheckBox IsChecked="{Binding SkipNgs,Mode=TwoWay}" Margin="0 8 0 0" Content="自动跳过NGS" ToolTip="自动结束右下角NGS画面&#x0a;有的人会卡NGS导致无法进入游戏&#x0a;可以手动结束相关进程进入游戏&#x0a;参考：https://forum.gamer.com.tw/C.php?bsn=7650&amp;snA=1018778" />
-                                <CheckBox IsChecked="{Binding PreventAutoUpdate,Mode=TwoWay}" Margin="0 8 0 0" Content="阻止自动更新" ToolTip="枫之谷自动更新可能会造成游戏损坏&#x0a;勾选后检测到游戏更新程序会自动终止" IsEnabled="False" />
-                                <CheckBox IsChecked="{Binding CheckInstalled,Mode=TwoWay}" Margin="0 8 0 0" Content="启动时检查是否安装" />
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16 0 0">
-                                    <Button Click="InstallButton_Click" x:Name="InstallButton" Width="80" Content="安装" Style="{StaticResource MaterialDesignFlatButton}"></Button>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16 0 0">
-                                    <Button Click="SaveSettingButton_Click" Width="80" IsDefault="True" Content="确定" Style="{StaticResource MaterialDesignFlatButton}"></Button>
-                                    <Button Width="80" Margin="16 0 0 0" Content="取消" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" IsCancel="True" Style="{StaticResource MaterialDesignFlatButton}"></Button>
-                                </StackPanel>
-                            </StackPanel>
-                        </materialDesign:DialogHost>
-                    </Grid>
-                </materialDesign:DialogHost.DialogContent>
-            </materialDesign:DialogHost>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="16"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="16"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Button Grid.Column="0" Grid.Row="1" Click="InputIdPassButton_Click" IsEnabled="{Binding HasIdPass}" ToolTip="进入游戏输入帐号密码界面后&#x0a;确保光标在帐号输入框&#x0a;点击可直接将帐号密码输入并进入游戏" Cursor="Hand" Content="{materialDesign:PackIcon Kind=FormTextboxPassword}" />
+                <Button Grid.Column="2" Grid.Row="1" Click="RunGameButton_Click" IsEnabled="{Binding GamePathValid}" ToolTip="启动游戏" Cursor="Hand" Content="{materialDesign:PackIcon Kind=Play,Size=24}" />
+                <Button Grid.Column="4" Grid.Row="1" Click="RefreshPassButton_Click" IsEnabled="{Binding HasIdPass}" ToolTip="更新一次性游戏密码" Cursor="Hand" Content="{materialDesign:PackIcon Kind=LockReset,Size=24}" />
+            </Grid>
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Click="Button_Click" ToolTip="帮助" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{materialDesign:PackIcon Kind=Help,Size=24}" />
+                    <Button Click="SelectGameButton_Click" Margin="8 0 0 0" ToolTip="{Binding DisplayGamePath}" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{materialDesign:PackIcon Kind=FileMarkerOutline,Size=24}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <ToggleButton IsChecked="{Binding CheckInstalled,Mode=TwoWay}" Width="32" Height="32" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="启动时检测是否安装" Content="{materialDesign:PackIcon Kind=ArchiveOutline}" materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=ArchiveOffOutline}" />
+                    <Button Click="InstallButton_Click" Margin="8 0 0 0" ToolTip="{Binding InstallButtonText}" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{Binding InstallButtonContent}" />
+                </StackPanel>
+            </Grid>
+            
             <materialDesign:DialogHost>
                 <materialDesign:DialogHost.DialogContent>
                     <Grid x:Name="yesDialog" Margin="16">
@@ -89,7 +106,7 @@
                         <TextBlock Grid.Row="1" HorizontalAlignment="Left" x:Name="yesNoDialogTxt" Margin="0 16 0 0"></TextBlock>
                         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16 0 0">
                             <Button Click="yesNoDialogYesBtn_Click" Width="80" IsDefault="True" Content="确定" Style="{StaticResource MaterialDesignFlatButton}"></Button>
-                            <Button Width="80" Margin="16 0 0 0" Content="取消" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" IsCancel="True" Style="{StaticResource MaterialDesignFlatButton}"></Button>
+                            <Button Click="yesNoDialogNoBtn_Click" Width="80" Margin="16 0 0 0" Content="取消" IsCancel="True" Style="{StaticResource MaterialDesignFlatButton}"></Button>
                         </StackPanel>
                     </Grid>
                 </materialDesign:DialogHost.DialogContent>

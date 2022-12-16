@@ -25,15 +25,16 @@ namespace Start
     public partial class MainWindow : Window
     {
         private GameManager gameManager = null;
-        private IdPassModel IdPass = new IdPassModel();
         public MainWindow()
         {
             InitializeComponent();
             Environment.CurrentDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            //DataContext = this;
-            idPassPanel.DataContext = IdPass;
+#if !DEBUG
             InitMutex();
+#endif
             LoadSetting();
+            CheckMapleStoryProcess();
+            //先检查是否有游戏正在运行
             Loaded += (s, e) =>
             {
                 //GamePathValid();
@@ -42,23 +43,24 @@ namespace Start
             ContentRendered += (s, e) =>
             {
                 //窗体内容已经呈现完毕
-                SetInstallButtonContent();
+                //SetInstallButtonContent();
                 //Thread.Sleep(2000);
                 //IdPass.Id = "1111";
-                if (Setting.CheckInstalled && !Installed())
+                if (Setting.CheckInstalled && !Setting.IsInstall)
                 {
-                    yesNoDialogYesBtnClick = (s1, p) => {
+                    ShowYesNodDialog("检测到程序尚未安装，是否立即安装？", (s1, p) => {
                         Install();
-                        CheckRunArgs();
-                    };
-                    ShowYesNodDialog("检测到程序尚未安装，是否立即安装？");
+                        CheckGamePath();
+                    },(s1, p) => {
+                        CheckGamePath();
+                    });
                     return;
                 }
-                CheckRunArgs();
+                CheckGamePath();
             };
         }
 
-        #region 游戏启动相关
+#region 游戏启动相关
         [DllImport("LRInject.dll", EntryPoint = "LRInject", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         public static extern uint LRInject(string application, string workpath, string commandline, string dllpath, uint CodePage, bool HookIME);
         private class BeanfunArgs
@@ -84,6 +86,20 @@ namespace Start
         private const string getOtpUrl = "{0}beanfun_block/generic_handlers/get_webstart_otp.ashx?SN={1}&WebToken={2}&SecretCode={3}&ppppp={4}&ServiceCode={5}&ServiceRegion={6}&ServiceAccount={7}&CreateTime={8}&d={9}";
         private const string adapterUrl = "{0}generic_handlers/adapter.ashx?cmd=06002&sn={1}&result={2}&d={3}";
         //private List<string> keys = new List<string>();
+
+        private void CheckGamePath()
+        {
+            if (!Setting.GamePathValid)
+            {
+                ShowYesNodDialog("游戏目录无效！是否选择游戏目录？", (s, p) => {
+                    SelectGameButton_Click(null, null);
+                    Thread.Sleep(100);
+                    CheckRunArgs();
+                });
+                return;
+            }
+            CheckRunArgs();
+        }
 
         private void CheckRunArgs()
         {
@@ -159,7 +175,7 @@ namespace Start
                     Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() => Alert("错误", "插件当前只支持新枫之谷港区帐号启动游戏！")));
                     return;
                 }
-                IdPass.Id = argCls.ServiceAccount;
+                Setting.Id = argCls.ServiceAccount;
                 beanfunArgs = argCls;
                 GetOtp();
                 //argType.GetFields().ToList().ForEach(arg =>
@@ -203,7 +219,7 @@ namespace Start
                 return;
             }
             string key = arr[1].Substring(0, 8);
-            IdPass.Pass = EncodeString(arr[1].Remove(0, 8), key);
+            Setting.Pass = EncodeString(arr[1].Remove(0, 8), key);
             //Console.WriteLine("result:" + IdPass.Pass);
             if (Setting.AutoRun) RunMapleStory();
         }
@@ -243,21 +259,37 @@ namespace Start
             return array;
         }
 
+        private void CheckMapleStoryProcess()
+        {
+            List<Process> processList = new List<Process>();
+            string gameProcessName = Path.GetFileNameWithoutExtension(Setting.GameExe);
+            foreach (Process process in Process.GetProcessesByName(gameProcessName))
+            {
+                try
+                {
+                    if (process.MainModule.FileName == Setting.GamePath)
+                    {
+                        NewGameManager((uint)process.Id);
+                    }
+                }
+                catch { }
+            }
+        }
+
         private void RunMapleStory()
         {
-            if (!GamePathValid())
+            if (!Setting.GamePathValid)
             {
-                yesNoDialogYesBtnClick = (s, p) => {
-                    SelectGamePathTextBox_PreviewMouseLeftButtonUp(null, null);
-                    SaveSetting();
+                ShowYesNodDialog("游戏目录无效！是否选择游戏目录？", (s, p) => {
+                    SelectGameButton_Click(null, null);
+                    Thread.Sleep(100);
                     RunMapleStory();
-                };
-                ShowYesNodDialog("游戏目录无效！是否选择游戏目录？");
+                });
                 return;
             }
 
             List<Process> processList = new List<Process>();
-            string gameProcessName = Path.GetFileNameWithoutExtension(gameExe);
+            string gameProcessName = Path.GetFileNameWithoutExtension(Setting.GameExe);
             foreach (Process process in Process.GetProcessesByName(gameProcessName))
             {
                 try
@@ -269,8 +301,8 @@ namespace Start
 
             if (processList.Count > 0)
             {
-                yesNoDialogYesBtnClick = (s, p) => {
-                    foreach(Process process in processList)
+                ShowYesNodDialog("检测到游戏正在运行，是否结束游戏后重新运行？", (s, p) => {
+                    foreach (Process process in processList)
                     {
                         try
                         {
@@ -278,37 +310,42 @@ namespace Start
                         }
                         catch { }
                     }
-                    Thread.Sleep(100);
+                    Thread.Sleep(500);
                     RunMapleStory();
-                };
-                ShowYesNodDialog("检测到游戏正在运行，是否结束游戏后重新运行？");
+                });
                 return;
             }
             new Thread(new ThreadStart(() => {
                 string path = Setting.GamePath;
-                string commandLine = Setting.AutoLogin ? $"{gameExe} tw.login.maplestory.beanfun.com 8484 BeanFun {IdPass.Id} {IdPass.Pass}" : gameExe;
+                string commandLine = Setting.AutoLogin ? $"{Setting.GameExe} tw.login.maplestory.beanfun.com 8484 BeanFun {Setting.Id} {Setting.Pass}" : Setting.GameExe;
                 string dllPath = $"{Environment.CurrentDirectory}\\LRHookx64.dll";
                 //MessageBox.Show(path + "," + commandLine + "," + dllPath);
                 uint pid = LRInject(path, Path.GetDirectoryName(path), commandLine, dllPath, (uint)System.Globalization.CultureInfo.GetCultureInfo("zh-HK").TextInfo.ANSICodePage, Environment.OSVersion.Version >= new Version(6, 2));
                 Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() =>
                 {
                     //这里要放到主线程执行，否则会造成计时器退出
-                    gameManager = new GameManager(Setting, pid);
+                    NewGameManager(pid);
                 }));
             })).Start();
         }
+
+        private void NewGameManager(uint pid)
+        {
+            if(gameManager != null) gameManager.Dispose();
+            gameManager = new GameManager(Setting, pid);
+        }
         private void CopyIdButton_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(IdPass.Id);
+            Clipboard.SetText(Setting.Id);
         }
 
         private void CopyPassButton_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(IdPass.Pass);
+            Clipboard.SetText(Setting.Pass);
         }
         private void InputIdPassButton_Click(object sender, RoutedEventArgs e)
         {
-            if(!gameManager.InputIdPass(IdPass.Id, IdPass.Pass))
+            if(gameManager == null || !gameManager.InputIdPass(Setting.Id, Setting.Pass))
             {
                 Alert("错误", "请检查游戏是否运行！");
             }
@@ -322,9 +359,9 @@ namespace Start
         {
             RunMapleStory();
         }
-        #endregion
+#endregion
 
-        #region 进程通信
+#region 进程通信
         private const string AppMutexName = "MapleStoryLinTxWebStartMutex";
         private const string AppNamedPipeName = "MapleStoryLinTxWebStartNamedPipe";
         private const string AppRunCommand = "run";
@@ -421,71 +458,21 @@ namespace Start
             mutex = new Mutex(false, AppMutexName, out ok);
             return ok;
         }
-        #endregion
+#endregion
 
-        #region 设置
-        public SettingModel Setting = new SettingModel();
-        private const string settingFile = "./setting.yml";
-        private const string gameExe = "MapleStory.exe";
+#region 设置
+        public MainModel Setting = new MainModel("./setting.yml");
         private void LoadSetting()
         {
-            FileInfo file = new FileInfo(settingFile);
-            if (!file.Exists)
-            {
-                settingDialog.DataContext = Setting;
-                return;
-            }
-            var des = new DeserializerBuilder()
-              .WithNamingConvention(UnderscoredNamingConvention.Instance)
-              .IgnoreUnmatchedProperties()//忽略不存在的字段
-              .Build();
-            var yml = File.ReadAllText(file.FullName);
-            Setting = des.Deserialize<SettingModel>(yml);
-            settingDialog.DataContext = Setting;
-            IdPass.HideIdPass = Setting.HideIdPass;
+            Setting.Load();
+            DataContext = Setting;
         }
 
-        private bool SaveSetting()
+        private void SelectGameButton_Click(object sender, RoutedEventArgs e)
         {
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(UnderscoredNamingConvention.Instance)
-                .Build();
-            var yaml = serializer.Serialize(Setting);
-            try
-            {
-                File.WriteAllText(settingFile, yaml);
-            }
-            catch (Exception ex)
-            {
-                SettingAlert("保存失败", ex.Message);
-                return false;
-            }
-            IdPass.HideIdPass = Setting.HideIdPass;
-            return true;
-        }
-        private void SaveSettingButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!GamePathValid())
-            {
-                SettingAlert("错误", "游戏目录无效！");
-                return;
-            }
-            if (SaveSetting())
-            {
-                DialogHost.Close("RootDialog");
-            }
-        }
-
-        private void SettingButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogHost.Show(settingDialog, "RootDialog");
-        }
-        private void SelectGamePathTextBox_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Setting.GamePath = string.Empty;
             var openFileDialog = new Microsoft.Win32.OpenFileDialog()
             {
-                Filter = $"新枫之谷游戏文件 ({gameExe})|{gameExe}",
+                Filter = $"新枫之谷游戏文件 ({Setting.GameExe})|{Setting.GameExe}",
                 Title = "选择新枫之谷游戏目录",
                 //FileName = Setting.GamePath,
                 //InitialDirectory = Path.GetDirectoryName(Setting.GamePath),
@@ -500,30 +487,44 @@ namespace Start
                 Setting.GamePath = openFileDialog.FileName;
             }
         }
-        private bool GamePathValid()
-        {
-            if (string.IsNullOrEmpty(Setting.GamePath)) return false;
-            if (gameExe != Path.GetFileName(Setting.GamePath)) return false;
-            return File.Exists(Setting.GamePath);
-        }
-        #endregion
 
-        #region 提示框
-        private RoutedEventHandler yesNoDialogYesBtnClick = (sender, args) => { };
+#endregion
+
+#region 提示框
+        private RoutedEventHandler yesNoDialogYesBtnClick = null;
+        private RoutedEventHandler yesNoDialogNoBtnClick = null;
+        private RoutedEventHandler yesNoDialogFinal = null;
         private void yesNoDialogYesBtn_Click(object sender, RoutedEventArgs e)
         {
             DialogHost.Close("RootDialog");
-            yesNoDialogYesBtnClick(sender, e);
+            yesNoDialogYesBtnClick?.Invoke(sender, e);
+            yesNoDialogFinal?.Invoke(sender, e);
         }
-
-        private void ShowYesNodDialog(string message)
+        private void yesNoDialogNoBtn_Click(object sender, RoutedEventArgs e)
         {
-            ShowYesNodDialog("提示", message);
+            DialogHost.Close("RootDialog");
+            yesNoDialogNoBtnClick?.Invoke(sender, e);
+            yesNoDialogFinal?.Invoke(sender, e);
         }
-        private void ShowYesNodDialog(string title, string message)
+        private void ShowYesNodDialog(string message, RoutedEventHandler yesBtnClick)
+        {
+            ShowYesNodDialog("提示", message, yesBtnClick, null, null);
+        }
+        private void ShowYesNodDialog(string message, RoutedEventHandler yesBtnClick, RoutedEventHandler NoBtnClick)
+        {
+            ShowYesNodDialog("提示", message, yesBtnClick, NoBtnClick, null);
+        }
+        private void ShowYesNodDialog(string message, RoutedEventHandler yesBtnClick, RoutedEventHandler NoBtnClick, RoutedEventHandler FinalHandler)
+        {
+            ShowYesNodDialog("提示", message, yesBtnClick, NoBtnClick, FinalHandler);
+        }
+        private void ShowYesNodDialog(string title, string message, RoutedEventHandler yesBtnClick, RoutedEventHandler NoBtnClick, RoutedEventHandler FinalHandler)
         {
             yesNoDialogTitleTxt.Text = "提示";
             yesNoDialogTxt.Text = message;
+            yesNoDialogYesBtnClick = yesBtnClick;
+            yesNoDialogNoBtnClick = NoBtnClick;
+            yesNoDialogFinal = FinalHandler;
             DialogHost.Show(yesNoDialog, "RootDialog");
         }
 
@@ -540,49 +541,13 @@ namespace Start
             yesDialogTxt.Text = content;
             DialogHost.Show(yesDialog, "settingDialogHost");
         }
-        #endregion
+#endregion
 
-        #region 安装和卸载
-        private const string RegKeyString = "beanfunHK";
-
-        private bool Installed()
-        {
-            try
-            {
-                var surekamKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(RegKeyString);
-                if (surekamKey == null) return false;
-                var shellKey = surekamKey.OpenSubKey("shell");
-                if (shellKey == null) return false;
-                var openKey = shellKey.OpenSubKey("open");
-                if (openKey == null) return false;
-                var commandKey = openKey.OpenSubKey("command");
-                if (commandKey == null) return false;
-                var val = commandKey.GetValue("").ToString();
-                var exePath = Process.GetCurrentProcess().MainModule.FileName;
-                //Console.WriteLine("val:" + val + ",exe:" + exePath);
-                return val.StartsWith(exePath);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private void SetInstallButtonContent()
-        {
-            if (Installed())
-            {
-                InstallButton.Content = "卸载";
-            }
-            else
-            {
-                InstallButton.Content = "安装";
-            }
-        }
+#region 安装和卸载
 
         private void InstallButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Installed())
+            if (Setting.IsInstall)
             {
                 Uninstall();
             }
@@ -590,7 +555,7 @@ namespace Start
             {
                 Install();
             }
-            SetInstallButtonContent();
+            Setting.IsInstall = true;
         }
 
         private void Install()
@@ -600,7 +565,7 @@ namespace Start
             {
                 //注册的协议头，即在地址栏中的路径 如QQ的：tencent://xxxxx/xxx 我注册的是jun 在地址栏中输入：jun:// 就能打开本程序
                 var exePath = Process.GetCurrentProcess().MainModule.FileName;
-                var surekamKey = Microsoft.Win32.Registry.ClassesRoot.CreateSubKey(RegKeyString);
+                var surekamKey = Microsoft.Win32.Registry.ClassesRoot.CreateSubKey(Setting.RegKey);
                 surekamKey.SetValue("", "URL: beanfunhk Protocol");
                 surekamKey.SetValue("URL Protocol", "");
                 var defaultIconKey = surekamKey.CreateSubKey("DefaultIcon");
@@ -622,7 +587,7 @@ namespace Start
         {
             try
             {
-                if (Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(RegKeyString) != null) Microsoft.Win32.Registry.ClassesRoot.DeleteSubKeyTree(RegKeyString);
+                if (Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(Setting.RegKey) != null) Microsoft.Win32.Registry.ClassesRoot.DeleteSubKeyTree(Setting.RegKey);
             }
             catch (Exception ex)
             {
@@ -631,5 +596,10 @@ namespace Start
         }
 
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Alert("帮助", "如果需要使用帐号密码相关功能，请点击右下角的安装按钮。\r然后在beanfun网页点击启动游戏按钮后即可使用。\r如果仅作为游戏启动器，则不需要安装。\r详情请至https://github.com/lintx/MapleStoryWebStart");
+        }
     }
 }
