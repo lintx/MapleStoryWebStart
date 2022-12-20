@@ -18,10 +18,17 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Click="ImportButton_Click" ToolTip="导入beanfun链接" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{materialDesign:PackIcon Kind=Import,Size=24}" />
+                    <Button IsEnabled="{Binding HasIdPass}" Click="ExportButton_Click" ToolTip="导出beanfun链接" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{materialDesign:PackIcon Kind=Export,Size=24}" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -29,7 +36,7 @@
                 <TextBox Grid.Column="0" IsEnabled="{Binding HasIdPass}" materialDesign:HintAssist.Hint="游戏帐号" Text="{Binding DisplayId,Mode=OneWay}" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
                 <Button Grid.Column="1" IsEnabled="{Binding HasIdPass}" Click="CopyIdButton_Click" ToolTip="将游戏帐号复制到剪切板" Style="{StaticResource MaterialDesignToolButton}" Height="24" Width="24" Cursor="Hand" Content="{materialDesign:PackIcon Kind=ContentCopy}" />
             </Grid>
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -37,7 +44,7 @@
                 <TextBox Grid.Column="0" IsEnabled="{Binding HasIdPass}" materialDesign:HintAssist.Hint="一次性游戏密码" Text="{Binding DisplayPass,Mode=OneWay}" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
                 <Button Grid.Column="1" IsEnabled="{Binding HasIdPass}" Click="CopyPassButton_Click" ToolTip="将一次性游戏密码复制到剪切板" Style="{StaticResource MaterialDesignToolButton}" Height="24" Width="24" Cursor="Hand" Content="{materialDesign:PackIcon Kind=ContentCopy}" />
             </Grid>
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 8 0 0">
                 <ToggleButton IsChecked="{Binding HideIdPass,Mode=TwoWay}" Width="32" Height="32" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否显示帐号密码&#x0a;开启后帐号密码以星号显示" Content="{materialDesign:PackIcon Kind=EyeOutline}" />
                 <ToggleButton IsChecked="{Binding AutoLogin,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="开启自动登录游戏：&#x0a;  不需要输入一次性密码直接进入选区界面&#x0a;  掉线后需要关闭游戏重新进入&#x0a;不自动登录游戏：&#x0a;  需要手动输入一次性密码或使用自动输入功能&#x0a;  掉线后不需要关闭游戏，可以重新输入密码进入游戏" Content="{materialDesign:PackIcon Kind=ArrowDecisionAuto}" />
                 <ToggleButton IsChecked="{Binding AutoRun,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="刷新密码后是否自动运行游戏" Content="{materialDesign:PackIcon Kind=CandyOutline}" />
@@ -45,7 +52,7 @@
                 <ToggleButton IsChecked="{Binding SkipNgs,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否自动结束右下角NGS画面&#x0a;有的人会卡NGS导致无法进入游戏&#x0a;可以手动结束相关进程进入游戏&#x0a;参考：https://forum.gamer.com.tw/C.php?bsn=7650&amp;snA=1018778" Content="{materialDesign:PackIcon Kind=DogSide}" />
                 <ToggleButton IsChecked="{Binding PreventAutoUpdate,Mode=TwoWay}" IsEnabled="False" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否阻止自动更新&#x0a;枫之谷自动更新可能会造成游戏损坏&#x0a;勾选后检测到游戏更新程序会自动终止" Content="{materialDesign:PackIcon Kind=UploadOutline}" />
             </StackPanel>
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="16"></ColumnDefinition>
@@ -63,13 +70,13 @@
                 <Button Grid.Column="4" Grid.Row="1" Click="RefreshPassButton_Click" IsEnabled="{Binding HasIdPass}" ToolTip="更新一次性游戏密码" Cursor="Hand" Content="{materialDesign:PackIcon Kind=LockReset,Size=24}" />
             </Grid>
 
-            <Grid Grid.Row="4">
+            <Grid Grid.Row="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Click="Button_Click" ToolTip="帮助" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{materialDesign:PackIcon Kind=Help,Size=24}" />
+                    <Button Click="HelpButton_Click" ToolTip="帮助" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{materialDesign:PackIcon Kind=Help,Size=24}" />
                     <Button Click="SelectGameButton_Click" Margin="8 0 0 0" ToolTip="{Binding DisplayGamePath}" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="32" Width="32" Cursor="Hand" Content="{materialDesign:PackIcon Kind=FileMarkerOutline,Size=24}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -107,6 +114,42 @@
                         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16 0 0">
                             <Button Click="yesNoDialogYesBtn_Click" Width="80" IsDefault="True" Content="确定" Style="{StaticResource MaterialDesignFlatButton}"></Button>
                             <Button Click="yesNoDialogNoBtn_Click" Width="80" Margin="16 0 0 0" Content="取消" IsCancel="True" Style="{StaticResource MaterialDesignFlatButton}"></Button>
+                        </StackPanel>
+                    </Grid>
+                </materialDesign:DialogHost.DialogContent>
+            </materialDesign:DialogHost>
+            <materialDesign:DialogHost>
+                <materialDesign:DialogHost.DialogContent>
+                    <Grid x:Name="importDialog" Margin="16">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="22">导入beanfun链接</TextBlock>
+                        <TextBox MaxWidth="450" Grid.Row="1" x:Name="importDialogText" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="beanfun链接" InputMethod.IsInputMethodEnabled="False" />
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16 0 0">
+                            <Button Click="ImportOkButton_Click" Width="100" IsDefault="True" Content="确定导入" Style="{StaticResource MaterialDesignFlatButton}"></Button>
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Width="80" Margin="16 0 0 0" Content="取消" IsCancel="True" Style="{StaticResource MaterialDesignFlatButton}"></Button>
+                        </StackPanel>
+                    </Grid>
+                </materialDesign:DialogHost.DialogContent>
+            </materialDesign:DialogHost>
+            <materialDesign:DialogHost>
+                <materialDesign:DialogHost.DialogContent>
+                    <Grid x:Name="exportDialog" Margin="16">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="22">导出beanfun链接</TextBlock>
+                        <TextBlock Grid.Row="1" HorizontalAlignment="Left" Margin="0 16 0 0" Text="导出beanfun链接可以用于多台设备不重新登录时获取一次性游戏密码，&#x0a;在网页退出登录后依然有效，再次在网页登录后将无法获取密码，&#x0a;经过简单测试，未发现该链接可以进入网页会员中心，&#x0a;但仍不排除有其他安全风险的可能，请谨慎使用！&#x0a;点击复制按钮将beanfun链接复制到剪切板后可以发送给他人。"></TextBlock>
+                        <TextBox MaxWidth="450" Grid.Row="2" x:Name="exportDialogText" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="beanfun链接" IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" InputMethod.IsInputMethodEnabled="False" />
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16 0 0">
+                            <Button Click="ExportCopyButton_Click" Width="100" Content="复制链接" Style="{StaticResource MaterialDesignFlatButton}"></Button>
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Width="80" Margin="16 0 0 0" Content="取消" IsCancel="True" Style="{StaticResource MaterialDesignFlatButton}"></Button>
                         </StackPanel>
                     </Grid>
                 </materialDesign:DialogHost.DialogContent>

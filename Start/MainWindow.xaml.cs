@@ -25,6 +25,7 @@ namespace Start
     public partial class MainWindow : Window
     {
         private GameManager gameManager = null;
+        private string bfLink = string.Empty;
         public MainWindow()
         {
             InitializeComponent();
@@ -110,11 +111,12 @@ namespace Start
             }
         }
 
-        private void EncodeRunArgs(string cmd)
+        private void EncodeRunArgs(string cmd)  
         {
             //Console.WriteLine("run command:"+cmd);
             try
             {
+                bfLink = cmd;
                 var argCls = new BeanfunArgs();
                 var argType = argCls.GetType();
                 string[] args = cmd.Split(argDelimiter, StringSplitOptions.RemoveEmptyEntries);
@@ -597,9 +599,33 @@ namespace Start
 
         #endregion
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             Alert("帮助", "如果需要使用帐号密码相关功能，请点击右下角的安装按钮。\r然后在beanfun网页点击启动游戏按钮后即可使用。\r如果仅作为游戏启动器，则不需要安装。\r详情请至https://github.com/lintx/MapleStoryWebStart");
+        }
+
+        private void ImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            importDialogText.Text = "";
+            DialogHost.Show(importDialog, "RootDialog");
+        }
+
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            exportDialogText.Text = bfLink;
+            DialogHost.Show(exportDialog, "RootDialog");
+        }
+
+        private void ExportCopyButton_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(bfLink);
+            DialogHost.Close("RootDialog");
+        }
+
+        private void ImportOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogHost.Close("RootDialog");
+            EncodeRunArgs(importDialogText.Text);
         }
     }
 }
