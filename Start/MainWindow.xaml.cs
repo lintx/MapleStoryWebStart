@@ -29,6 +29,7 @@ namespace Start
         public MainWindow()
         {
             InitializeComponent();
+            App.mainWindow = this;
             Environment.CurrentDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
 #if !DEBUG
             InitMutex();
@@ -530,7 +531,7 @@ namespace Start
             DialogHost.Show(yesNoDialog, "RootDialog");
         }
 
-        private void Alert(string title, string content)
+        internal void Alert(string title, string content)
         {
             yesDialogTitleTxt.Text = title;
             yesDialogTxt.Text = content;

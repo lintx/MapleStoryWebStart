@@ -50,7 +50,7 @@
                 <ToggleButton IsChecked="{Binding AutoRun,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="刷新密码后是否自动运行游戏" Content="{materialDesign:PackIcon Kind=CandyOutline}" />
                 <ToggleButton IsChecked="{Binding SkipPlayer,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否跳过Play窗口&#x0a;检测到Play窗口后自动将其关闭" Content="{materialDesign:PackIcon Kind=AirHumidifier}" />
                 <ToggleButton IsChecked="{Binding SkipNgs,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否自动结束右下角NGS画面&#x0a;有的人会卡NGS导致无法进入游戏&#x0a;可以手动结束相关进程进入游戏&#x0a;参考：https://forum.gamer.com.tw/C.php?bsn=7650&amp;snA=1018778" Content="{materialDesign:PackIcon Kind=DogSide}" />
-                <ToggleButton IsChecked="{Binding PreventAutoUpdate,Mode=TwoWay}" IsEnabled="False" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否阻止自动更新&#x0a;枫之谷自动更新可能会造成游戏损坏&#x0a;勾选后检测到游戏更新程序会自动终止" Content="{materialDesign:PackIcon Kind=UploadOutline}" />
+                <ToggleButton IsChecked="{Binding PreventAutoUpdate,Mode=TwoWay}" Width="32" Height="32" Margin="2 0 0 0" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="是否阻止自动更新&#x0a;枫之谷自动更新可能会造成游戏损坏&#x0a;勾选后检测到游戏更新程序会自动终止" Content="{materialDesign:PackIcon Kind=UploadOutline}" />
             </StackPanel>
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>

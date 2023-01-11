@@ -99,6 +99,7 @@ namespace Start
                     {
                         //该方法尚未验证，需要验证升级窗口的父ID是否是游戏本地，和打开升级窗口后父ID是否已退出
                         _p.Kill();
+                        App.mainWindow.Alert("警告","发现游戏尝试进行自动升级，已阻止！");
                         break;
                     }
                 }
